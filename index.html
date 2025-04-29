@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lab Report OCR</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f7f8;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+    }
+    form {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    input[type="file"] {
+      display: block;
+      margin: 20px auto;
+      font-size: 16px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #result {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    .error {
+      color: #e74c3c;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload Lab Report Image</h1>
+  <form id="upload-form">
+    <input type="file" id="image-file" accept="image/*" required />
+    <button type="submit">Extract Lab Tests</button>
+  </form>
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('image-file');
+      if (fileInput.files.length === 0) {
+        alert('Please select an image file.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      result.textContent = 'Processing... Please wait.';
+
+      try {
+        const response = await fetch('/get-lab-tests', {
+          method: 'POST',
+          body: formData
+        });
+        if (!response.ok) {
+          const error = await response.json();
+          result.innerHTML = '<span class="error">Error: ' + (error.detail || response.statusText) + '</span>';
+          return;
+        }
+        const data = await response.json();
+        if (data.is_success) {
+          result.textContent = JSON.stringify(data.lab_tests, null, 2);
+        } else {
+          result.innerHTML = '<span class="error">Failed to extract lab tests.</span>';
+        }
+      } catch (err) {
+        result.innerHTML = '<span class="error">Error: ' + err.message + '</span>';
+      }
+    });
+  </script>
+</body>
+</html>

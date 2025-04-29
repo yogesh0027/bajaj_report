@@ -1,0 +1,25 @@
+Step-by-step instructions to set up a Python virtual environment and run the FastAPI service:
+
+1. Open a terminal in the project directory (c:/Users/yogesh/Desktop/bajaj).
+
+2. Create a virtual environment:
+   python -m venv venv
+
+3. Activate the virtual environment:
+   - On Windows (cmd):
+     venv\Scripts\activate.bat
+   - On Windows (PowerShell):
+     venv\Scripts\Activate.ps1
+
+4. Upgrade pip inside the virtual environment:
+   python -m pip install --upgrade pip
+
+5. Install dependencies inside the virtual environment:
+   pip install -r requirements.txt
+
+6. Run the FastAPI server inside the virtual environment:
+   uvicorn app:app --reload
+
+7. Access the API at http://127.0.0.1:8000/get-lab-tests
+
+This will ensure the correct Python environment with all dependencies including pytesseract is used.
